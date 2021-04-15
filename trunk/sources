@@ -1,0 +1,12 @@
+TARGETNAME=test
+TARGETTYPE=DRIVER
+
+SOURCES=test.c \
+        FastIo.c
+
+TARGETPATH=obj
+
+TARGETLIBS= $(TARGETLIBS) \
+            $(IFSKIT_LIB_PATH)\fltMgr.lib \
+			#$(DDK_LIB_PATH)\Aux_klib.lib
+
