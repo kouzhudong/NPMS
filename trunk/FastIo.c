@@ -8,232 +8,175 @@
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-BOOLEAN FsFilterFastIoCheckIfPossible(__in PFILE_OBJECT FileObject,
-                                      __in PLARGE_INTEGER FileOffset,
-                                      __in ULONG Length,
-                                      __in BOOLEAN Wait,
-                                      __in ULONG LockKey,
-                                      __in BOOLEAN CheckForReadOperation,
-                                      __out PIO_STATUS_BLOCK IoStatus,
-                                      __in PDEVICE_OBJECT DeviceObject)
-{
-    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
-    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
-
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoCheckIfPossible)) {
-        return (fastIoDispatch->FastIoCheckIfPossible)(FileObject,
-                                                       FileOffset,
-                                                       Length,
-                                                       Wait,
-                                                       LockKey,
-                                                       CheckForReadOperation,
-                                                       IoStatus,
-                                                       nextDeviceObject);
-    }
-
-    return FALSE;
-}
-
-
-BOOLEAN FsFilterFastIoRead(__in PFILE_OBJECT FileObject,
-                           __in PLARGE_INTEGER FileOffset,
-                           __in ULONG Length,
-                           __in BOOLEAN Wait,
-                           __in ULONG LockKey,
-                           __out PVOID Buffer,
-                           __out PIO_STATUS_BLOCK IoStatus,
-                           __in PDEVICE_OBJECT DeviceObject)
-{
-    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
-    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
-
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoRead)) {
-        return (fastIoDispatch->FastIoRead)(FileObject,
-                                            FileOffset,
-                                            Length,
-                                            Wait,
-                                            LockKey,
-                                            Buffer,
-                                            IoStatus,
-                                            nextDeviceObject);
-    }
-
-    return FALSE;
-}
-
-
-BOOLEAN FsFilterFastIoWrite(__in PFILE_OBJECT FileObject,
-                            __in PLARGE_INTEGER FileOffset,
-                            __in ULONG Length,
-                            __in BOOLEAN Wait,
-                            __in ULONG LockKey,
-                            __in PVOID Buffer,
-                            __out PIO_STATUS_BLOCK IoStatus,
-                            __in PDEVICE_OBJECT DeviceObject)
-{
-    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
-    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
-
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoWrite)) {
-        return (fastIoDispatch->FastIoWrite)(FileObject,
-                                             FileOffset,
-                                             Length,
-                                             Wait,
-                                             LockKey,
-                                             Buffer,
-                                             IoStatus,
-                                             nextDeviceObject);
-    }
-
-    return FALSE;
-}
-
-
-BOOLEAN FsFilterFastIoQueryBasicInfo(__in PFILE_OBJECT FileObject,
-                                     __in BOOLEAN Wait,
-                                     __out PFILE_BASIC_INFORMATION Buffer,
-                                     __out PIO_STATUS_BLOCK IoStatus,
-                                     __in PDEVICE_OBJECT DeviceObject)
-{
-    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
-    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
-
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoQueryBasicInfo)) {
-        return (fastIoDispatch->FastIoQueryBasicInfo)(FileObject,
-                                                      Wait,
-                                                      Buffer,
-                                                      IoStatus,
-                                                      nextDeviceObject);
-    }
-
-    return FALSE;
-}
-
-
-BOOLEAN FsFilterFastIoQueryStandardInfo(__in PFILE_OBJECT FileObject,
-                                        __in BOOLEAN Wait,
-                                        __out PFILE_STANDARD_INFORMATION Buffer,
-                                        __out PIO_STATUS_BLOCK IoStatus,
-                                        __in PDEVICE_OBJECT DeviceObject)
-{
-    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
-    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
-
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoQueryStandardInfo)) {
-        return (fastIoDispatch->FastIoQueryStandardInfo)(FileObject,
-                                                         Wait,
-                                                         Buffer,
-                                                         IoStatus,
-                                                         nextDeviceObject);
-    }
-
-    return FALSE;
-}
-
-
-BOOLEAN FsFilterFastIoLock(__in PFILE_OBJECT FileObject,
-                           __in PLARGE_INTEGER FileOffset,
-                           __in PLARGE_INTEGER Length,
-                           __in PEPROCESS ProcessId,
-                           __in ULONG Key,
-                           __in BOOLEAN FailImmediately,
-                           __in BOOLEAN ExclusiveLock,
-                           __out PIO_STATUS_BLOCK IoStatus,
-                           __in PDEVICE_OBJECT DeviceObject)
-{
-    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
-    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
-
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoLock)) {
-        return (fastIoDispatch->FastIoLock)(FileObject,
-                                            FileOffset,
-                                            Length,
-                                            ProcessId,
-                                            Key,
-                                            FailImmediately,
-                                            ExclusiveLock,
-                                            IoStatus,
-                                            nextDeviceObject);
-    }
-
-    return FALSE;
-}
-
-
-BOOLEAN FsFilterFastIoUnlockSingle(__in PFILE_OBJECT FileObject,
-                                   __in PLARGE_INTEGER FileOffset,
-                                   __in PLARGE_INTEGER Length,
-                                   __in PEPROCESS ProcessId,
-                                   __in ULONG Key,
-                                   __out PIO_STATUS_BLOCK IoStatus,
-                                   __in PDEVICE_OBJECT DeviceObject)
-{
-    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
-    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
-
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoUnlockSingle)) {
-        return (fastIoDispatch->FastIoUnlockSingle)(FileObject,
-                                                    FileOffset,
-                                                    Length,
-                                                    ProcessId,
-                                                    Key,
-                                                    IoStatus,
-                                                    nextDeviceObject);
-    }
-
-    return FALSE;
-}
-
-
-BOOLEAN FsFilterFastIoUnlockAll(__in PFILE_OBJECT FileObject,
-                                __in PEPROCESS ProcessId,
+BOOLEAN NpFastIoCheckIfPossible(__in PFILE_OBJECT FileObject,
+                                __in PLARGE_INTEGER FileOffset,
+                                __in ULONG Length,
+                                __in BOOLEAN Wait,
+                                __in ULONG LockKey,
+                                __in BOOLEAN CheckForReadOperation,
                                 __out PIO_STATUS_BLOCK IoStatus,
                                 __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
 
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoUnlockAll)) {
-        return (fastIoDispatch->FastIoUnlockAll)(FileObject,
-                                                 ProcessId,
-                                                 IoStatus,
-                                                 nextDeviceObject);
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoCheckIfPossible)) {
+        return (fastIoDispatch->FastIoCheckIfPossible)(FileObject, FileOffset, Length, Wait, LockKey, CheckForReadOperation, IoStatus, nextDeviceObject);
     }
 
     return FALSE;
 }
 
 
-BOOLEAN FsFilterFastIoUnlockAllByKey(__in PFILE_OBJECT FileObject,
-                                     __in PVOID ProcessId,
-                                     __in ULONG Key,
-                                     __out PIO_STATUS_BLOCK IoStatus,
-                                     __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoRead(__in PFILE_OBJECT FileObject,
+                     __in PLARGE_INTEGER FileOffset,
+                     __in ULONG Length,
+                     __in BOOLEAN Wait,
+                     __in ULONG LockKey,
+                     __out PVOID Buffer,
+                     __out PIO_STATUS_BLOCK IoStatus,
+                     __in PDEVICE_OBJECT DeviceObject)
+{
+    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
+    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
+
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoRead)) {
+        return (fastIoDispatch->FastIoRead)(FileObject, FileOffset, Length, Wait, LockKey, Buffer, IoStatus, nextDeviceObject);
+    }
+
+    return FALSE;
+}
+
+
+BOOLEAN NpFastIoWrite(__in PFILE_OBJECT FileObject,
+                      __in PLARGE_INTEGER FileOffset,
+                      __in ULONG Length,
+                      __in BOOLEAN Wait,
+                      __in ULONG LockKey,
+                      __in PVOID Buffer,
+                      __out PIO_STATUS_BLOCK IoStatus,
+                      __in PDEVICE_OBJECT DeviceObject)
+{
+    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
+    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
+
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoWrite)) {
+        return (fastIoDispatch->FastIoWrite)(FileObject, FileOffset, Length, Wait, LockKey, Buffer, IoStatus, nextDeviceObject);
+    }
+
+    return FALSE;
+}
+
+
+BOOLEAN NpFastIoQueryBasicInfo(__in PFILE_OBJECT FileObject,
+                               __in BOOLEAN Wait,
+                               __out PFILE_BASIC_INFORMATION Buffer,
+                               __out PIO_STATUS_BLOCK IoStatus,
+                               __in PDEVICE_OBJECT DeviceObject)
+{
+    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
+    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
+
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoQueryBasicInfo)) {
+        return (fastIoDispatch->FastIoQueryBasicInfo)(FileObject, Wait, Buffer, IoStatus, nextDeviceObject);
+    }
+
+    return FALSE;
+}
+
+
+BOOLEAN NpFastIoQueryStandardInfo(__in PFILE_OBJECT FileObject, 
+                                  __in BOOLEAN Wait,
+                                  __out PFILE_STANDARD_INFORMATION Buffer,
+                                  __out PIO_STATUS_BLOCK IoStatus,
+                                  __in PDEVICE_OBJECT DeviceObject)
+{
+    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
+    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
+
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoQueryStandardInfo)) {
+        return (fastIoDispatch->FastIoQueryStandardInfo)(FileObject, Wait, Buffer, IoStatus, nextDeviceObject);
+    }
+
+    return FALSE;
+}
+
+
+BOOLEAN NpFastIoLock(__in PFILE_OBJECT FileObject,
+                     __in PLARGE_INTEGER FileOffset,
+                     __in PLARGE_INTEGER Length,
+                     __in PEPROCESS ProcessId,
+                     __in ULONG Key,
+                     __in BOOLEAN FailImmediately,
+                     __in BOOLEAN ExclusiveLock,
+                     __out PIO_STATUS_BLOCK IoStatus,
+                     __in PDEVICE_OBJECT DeviceObject)
+{
+    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
+    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
+
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoLock)) {
+        return (fastIoDispatch->FastIoLock)(FileObject, FileOffset, Length, ProcessId, Key, FailImmediately, ExclusiveLock, IoStatus, nextDeviceObject);
+    }
+
+    return FALSE;
+}
+
+
+BOOLEAN NpFastIoUnlockSingle(__in PFILE_OBJECT FileObject,
+                             __in PLARGE_INTEGER FileOffset,
+                             __in PLARGE_INTEGER Length,
+                             __in PEPROCESS ProcessId,
+                             __in ULONG Key,
+                             __out PIO_STATUS_BLOCK IoStatus,
+                             __in PDEVICE_OBJECT DeviceObject)
+{
+    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
+    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
+
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoUnlockSingle)) {
+        return (fastIoDispatch->FastIoUnlockSingle)(FileObject, FileOffset, Length, ProcessId, Key, IoStatus, nextDeviceObject);
+    }
+
+    return FALSE;
+}
+
+
+BOOLEAN NpFastIoUnlockAll(__in PFILE_OBJECT FileObject, __in PEPROCESS ProcessId, __out PIO_STATUS_BLOCK IoStatus, __in PDEVICE_OBJECT DeviceObject)
+{
+    PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
+    PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
+
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoUnlockAll)) {
+        return (fastIoDispatch->FastIoUnlockAll)(FileObject, ProcessId, IoStatus, nextDeviceObject);
+    }
+
+    return FALSE;
+}
+
+
+BOOLEAN NpFastIoUnlockAllByKey(__in PFILE_OBJECT FileObject, __in PVOID ProcessId, __in ULONG Key, __out PIO_STATUS_BLOCK IoStatus, __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
 
     if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoUnlockAllByKey)) {
-        return (fastIoDispatch->FastIoUnlockAllByKey)(FileObject,
-                                                      ProcessId,
-                                                      Key,
-                                                      IoStatus,
-                                                      nextDeviceObject);
+        return (fastIoDispatch->FastIoUnlockAllByKey)(FileObject, ProcessId, Key, IoStatus, nextDeviceObject);
     }
 
     return FALSE;
 }
 
 
-BOOLEAN FsFilterFastIoDeviceControl(__in PFILE_OBJECT FileObject,
-                                    __in BOOLEAN Wait,
-                                    __in_opt PVOID InputBuffer,
-                                    __in ULONG InputBufferLength,
-                                    __out_opt PVOID OutputBuffer,
-                                    __in ULONG OutputBufferLength,
-                                    __in ULONG IoControlCode,
-                                    __out PIO_STATUS_BLOCK IoStatus,
-                                    __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoDeviceControl(__in PFILE_OBJECT FileObject,
+                              __in BOOLEAN Wait,
+                              __in_opt PVOID InputBuffer,
+                              __in ULONG InputBufferLength,
+                              __out_opt PVOID OutputBuffer,
+                              __in ULONG OutputBufferLength,
+                              __in ULONG IoControlCode,
+                              __out PIO_STATUS_BLOCK IoStatus,
+                              __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
@@ -254,55 +197,43 @@ BOOLEAN FsFilterFastIoDeviceControl(__in PFILE_OBJECT FileObject,
 }
 
 
-BOOLEAN FsFilterFastIoQueryNetworkOpenInfo(__in PFILE_OBJECT FileObject,
-                                           __in BOOLEAN Wait,
-                                           __out PFILE_NETWORK_OPEN_INFORMATION Buffer,
-                                           __out PIO_STATUS_BLOCK IoStatus,
-                                           __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoQueryNetworkOpenInfo(__in PFILE_OBJECT FileObject,
+                                     __in BOOLEAN Wait,
+                                     __out PFILE_NETWORK_OPEN_INFORMATION Buffer,
+                                     __out PIO_STATUS_BLOCK IoStatus,
+                                     __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
 
     if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoQueryNetworkOpenInfo)) {
-        return (fastIoDispatch->FastIoQueryNetworkOpenInfo)(FileObject,
-                                                            Wait,
-                                                            Buffer,
-                                                            IoStatus,
-                                                            nextDeviceObject);
+        return (fastIoDispatch->FastIoQueryNetworkOpenInfo)(FileObject, Wait, Buffer, IoStatus, nextDeviceObject);
     }
 
     return FALSE;
 }
 
 
-BOOLEAN FsFilterFastIoMdlRead(__in PFILE_OBJECT FileObject,
-                              __in PLARGE_INTEGER FileOffset,
-                              __in ULONG Length,
-                              __in ULONG LockKey,
-                              __out PMDL * MdlChain,
-                              __out PIO_STATUS_BLOCK IoStatus,
-                              __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoMdlRead(__in PFILE_OBJECT FileObject,
+                        __in PLARGE_INTEGER FileOffset,
+                        __in ULONG Length,
+                        __in ULONG LockKey,
+                        __out PMDL * MdlChain,
+                        __out PIO_STATUS_BLOCK IoStatus,
+                        __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
 
     if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, MdlRead)) {
-        return (fastIoDispatch->MdlRead)(FileObject,
-                                         FileOffset,
-                                         Length,
-                                         LockKey,
-                                         MdlChain,
-                                         IoStatus,
-                                         nextDeviceObject);
+        return (fastIoDispatch->MdlRead)(FileObject, FileOffset, Length, LockKey, MdlChain, IoStatus, nextDeviceObject);
     }
 
     return FALSE;
 }
 
 
-BOOLEAN FsFilterFastIoMdlReadComplete(__in PFILE_OBJECT FileObject,
-                                      __in PMDL MdlChain,
-                                      __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoMdlReadComplete(__in PFILE_OBJECT FileObject, __in PMDL MdlChain, __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
@@ -315,35 +246,26 @@ BOOLEAN FsFilterFastIoMdlReadComplete(__in PFILE_OBJECT FileObject,
 }
 
 
-BOOLEAN FsFilterFastIoPrepareMdlWrite(__in PFILE_OBJECT FileObject,
-                                      __in PLARGE_INTEGER FileOffset,
-                                      __in ULONG Length,
-                                      __in ULONG LockKey,
-                                      __out PMDL * MdlChain,
-                                      __out PIO_STATUS_BLOCK IoStatus,
-                                      __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoPrepareMdlWrite(__in PFILE_OBJECT FileObject,
+                                __in PLARGE_INTEGER FileOffset,
+                                __in ULONG Length,
+                                __in ULONG LockKey,
+                                __out PMDL * MdlChain,
+                                __out PIO_STATUS_BLOCK IoStatus,
+                                __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
 
     if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, PrepareMdlWrite)) {
-        return (fastIoDispatch->PrepareMdlWrite)(FileObject,
-                                                 FileOffset,
-                                                 Length,
-                                                 LockKey,
-                                                 MdlChain,
-                                                 IoStatus,
-                                                 nextDeviceObject);
+        return (fastIoDispatch->PrepareMdlWrite)(FileObject, FileOffset, Length, LockKey, MdlChain, IoStatus, nextDeviceObject);
     }
 
     return FALSE;
 }
 
 
-BOOLEAN FsFilterFastIoMdlWriteComplete(__in PFILE_OBJECT FileObject,
-                                       __in PLARGE_INTEGER FileOffset,
-                                       __in PMDL MdlChain,
-                                       __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoMdlWriteComplete(__in PFILE_OBJECT FileObject, __in PLARGE_INTEGER FileOffset, __in PMDL MdlChain, __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
@@ -356,16 +278,16 @@ BOOLEAN FsFilterFastIoMdlWriteComplete(__in PFILE_OBJECT FileObject,
 }
 
 
-BOOLEAN FsFilterFastIoReadCompressed(__in PFILE_OBJECT FileObject,
-                                     __in PLARGE_INTEGER FileOffset,
-                                     __in ULONG Length,
-                                     __in ULONG LockKey,
-                                     __out PVOID Buffer,
-                                     __out PMDL * MdlChain,
-                                     __out PIO_STATUS_BLOCK IoStatus,
-                                     __out struct _COMPRESSED_DATA_INFO * CompressedDataInfo,
-                                     __in ULONG CompressedDataInfoLength,
-                                     __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoReadCompressed(__in PFILE_OBJECT FileObject,
+                               __in PLARGE_INTEGER FileOffset,
+                               __in ULONG Length,
+                               __in ULONG LockKey,
+                               __out PVOID Buffer,
+                               __out PMDL * MdlChain,
+                               __out PIO_STATUS_BLOCK IoStatus,
+                               __out struct _COMPRESSED_DATA_INFO * CompressedDataInfo,
+                               __in ULONG CompressedDataInfoLength,
+                               __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
@@ -387,16 +309,16 @@ BOOLEAN FsFilterFastIoReadCompressed(__in PFILE_OBJECT FileObject,
 }
 
 
-BOOLEAN FsFilterFastIoWriteCompressed(__in PFILE_OBJECT FileObject,
-                                      __in PLARGE_INTEGER FileOffset,
-                                      __in ULONG Length,
-                                      __in ULONG LockKey,
-                                      __in PVOID Buffer,
-                                      __out PMDL * MdlChain,
-                                      __out PIO_STATUS_BLOCK IoStatus,
-                                      __in struct _COMPRESSED_DATA_INFO * CompressedDataInfo,
-                                      __in ULONG CompressedDataInfoLength,
-                                      __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoWriteCompressed(__in PFILE_OBJECT FileObject,
+                                __in PLARGE_INTEGER FileOffset,
+                                __in ULONG Length,
+                                __in ULONG LockKey,
+                                __in PVOID Buffer,
+                                __out PMDL * MdlChain,
+                                __out PIO_STATUS_BLOCK IoStatus,
+                                __in struct _COMPRESSED_DATA_INFO * CompressedDataInfo,
+                                __in ULONG CompressedDataInfoLength,
+                                __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
@@ -418,9 +340,7 @@ BOOLEAN FsFilterFastIoWriteCompressed(__in PFILE_OBJECT FileObject,
 }
 
 
-BOOLEAN FsFilterFastIoMdlReadCompleteCompressed(__in PFILE_OBJECT FileObject,
-                                                __in PMDL MdlChain,
-                                                __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoMdlReadCompleteCompressed(__in PFILE_OBJECT FileObject, __in PMDL MdlChain, __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
@@ -433,10 +353,7 @@ BOOLEAN FsFilterFastIoMdlReadCompleteCompressed(__in PFILE_OBJECT FileObject,
 }
 
 
-BOOLEAN FsFilterFastIoMdlWriteCompleteCompressed(__in PFILE_OBJECT FileObject,
-                                                 __in PLARGE_INTEGER FileOffset,
-                                                 __in PMDL MdlChain,
-                                                 __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoMdlWriteCompleteCompressed(__in PFILE_OBJECT FileObject, __in PLARGE_INTEGER FileOffset, __in PMDL MdlChain, __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
@@ -449,15 +366,12 @@ BOOLEAN FsFilterFastIoMdlWriteCompleteCompressed(__in PFILE_OBJECT FileObject,
 }
 
 
-BOOLEAN FsFilterFastIoQueryOpen(__in PIRP Irp,
-                                __out PFILE_NETWORK_OPEN_INFORMATION NetworkInformation,
-                                __in PDEVICE_OBJECT DeviceObject)
+BOOLEAN NpFastIoQueryOpen(__in PIRP Irp, __out PFILE_NETWORK_OPEN_INFORMATION NetworkInformation, __in PDEVICE_OBJECT DeviceObject)
 {
     PDEVICE_OBJECT  nextDeviceObject = ((PFILTER_DEVICE_EXTENSION)DeviceObject->DeviceExtension)->NextDeviceObject;
     PFAST_IO_DISPATCH fastIoDispatch = nextDeviceObject->DriverObject->FastIoDispatch;
 
-    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoQueryOpen))
-    {
+    if (VALID_FAST_IO_DISPATCH_HANDLER(fastIoDispatch, FastIoQueryOpen)) {
         BOOLEAN result;
         PIO_STACK_LOCATION irpSp = IoGetCurrentIrpStackLocation(Irp);
         irpSp->DeviceObject = nextDeviceObject;
@@ -470,7 +384,7 @@ BOOLEAN FsFilterFastIoQueryOpen(__in PIRP Irp,
 }
 
 
-VOID FsFilterFastIoDetachDevice(__in PDEVICE_OBJECT SourceDevice, __in PDEVICE_OBJECT TargetDevice)
+VOID NpFastIoDetachDevice(__in PDEVICE_OBJECT SourceDevice, __in PDEVICE_OBJECT TargetDevice)
 {
     IoDetachDevice(TargetDevice);
     IoDeleteDevice(SourceDevice);
@@ -482,30 +396,30 @@ VOID FsFilterFastIoDetachDevice(__in PDEVICE_OBJECT SourceDevice, __in PDEVICE_O
 
 FAST_IO_DISPATCH g_FastIoDispatch = {
     sizeof(FAST_IO_DISPATCH),
-    FsFilterFastIoCheckIfPossible,
-    FsFilterFastIoRead,
-    FsFilterFastIoWrite,
-    FsFilterFastIoQueryBasicInfo,
-    FsFilterFastIoQueryStandardInfo,
-    FsFilterFastIoLock,
-    FsFilterFastIoUnlockSingle,
-    FsFilterFastIoUnlockAll,
-    FsFilterFastIoUnlockAllByKey,
-    FsFilterFastIoDeviceControl,
+    NpFastIoCheckIfPossible,
+    NpFastIoRead,
+    NpFastIoWrite,
+    NpFastIoQueryBasicInfo,
+    NpFastIoQueryStandardInfo,
+    NpFastIoLock,
+    NpFastIoUnlockSingle,
+    NpFastIoUnlockAll,
+    NpFastIoUnlockAllByKey,
+    NpFastIoDeviceControl,
     NULL,
     NULL,
-    FsFilterFastIoDetachDevice,
-    FsFilterFastIoQueryNetworkOpenInfo,
+    NpFastIoDetachDevice,
+    NpFastIoQueryNetworkOpenInfo,
     NULL,
-    FsFilterFastIoMdlRead,
-    FsFilterFastIoMdlReadComplete,
-    FsFilterFastIoPrepareMdlWrite,
-    FsFilterFastIoMdlWriteComplete,
-    FsFilterFastIoReadCompressed,
-    FsFilterFastIoWriteCompressed,
-    FsFilterFastIoMdlReadCompleteCompressed,
-    FsFilterFastIoMdlWriteCompleteCompressed,
-    FsFilterFastIoQueryOpen,
+    NpFastIoMdlRead,
+    NpFastIoMdlReadComplete,
+    NpFastIoPrepareMdlWrite,
+    NpFastIoMdlWriteComplete,
+    NpFastIoReadCompressed,
+    NpFastIoWriteCompressed,
+    NpFastIoMdlReadCompleteCompressed,
+    NpFastIoMdlWriteCompleteCompressed,
+    NpFastIoQueryOpen,
     NULL,
     NULL,
     NULL,
