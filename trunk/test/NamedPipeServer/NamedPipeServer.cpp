@@ -2,14 +2,14 @@
 // https://docs.microsoft.com/zh-cn/windows/win32/ipc/multithreaded-pipe-server?redirectedfrom=MSDN
 
 /*
-The following example is a multithreaded pipe server. 
-It has a main thread with a loop that creates a pipe instance and waits for a pipe client to connect. 
-When a pipe client connects, the pipe server creates a thread to service that client and then continues to execute the loop in the main thread. 
-It is possible for a pipe client to connect successfully to the pipe instance in the interval between calls to the CreateNamedPipe and ConnectNamedPipe functions. 
+The following example is a multithreaded pipe server.
+It has a main thread with a loop that creates a pipe instance and waits for a pipe client to connect.
+When a pipe client connects, the pipe server creates a thread to service that client and then continues to execute the loop in the main thread.
+It is possible for a pipe client to connect successfully to the pipe instance in the interval between calls to the CreateNamedPipe and ConnectNamedPipe functions.
 If this happens, ConnectNamedPipe returns zero, and GetLastError returns ERROR_PIPE_CONNECTED.
 
-The thread created to service each pipe instance reads requests from the pipe and writes replies to the pipe until the pipe client closes its handle. 
-When this happens, the thread flushes the pipe, disconnects, closes its pipe handle, and terminates. 
+The thread created to service each pipe instance reads requests from the pipe and writes replies to the pipe until the pipe client closes its handle.
+When this happens, the thread flushes the pipe, disconnects, closes its pipe handle, and terminates.
 The main thread will run until an error occurs or the process is ended.
 
 This pipe server can be used with the pipe client described in Named Pipe Client.
@@ -32,11 +32,11 @@ int _tmain(VOID)
     HANDLE hPipe = INVALID_HANDLE_VALUE, hThread = NULL;
     LPCTSTR lpszPipename = TEXT("\\\\.\\pipe\\mynamedpipe");
 
-    // The main loop creates an instance of the named pipe and 
-    // then waits for a client to connect to it. When the client 
-    // connects, a thread is created to handle communications 
-    // with that client, and this loop is free to wait for the
-    // next client connect request. It is an infinite loop.
+    DebugBreak();
+
+    // The main loop creates an instance of the named pipe and then waits for a client to connect to it. 
+    // When the client connects, a thread is created to handle communications 
+    // with that client, and this loop is free to wait for the next client connect request. It is an infinite loop.
 
     for (;;) {
         _tprintf(TEXT("\nPipe Server: Main thread awaiting client connection on %s\n"), lpszPipename);
@@ -51,19 +51,14 @@ int _tmain(VOID)
             BUFSIZE,                  // input buffer size 
             0,                        // client time-out 
             NULL);                    // default security attribute 
-
         if (hPipe == INVALID_HANDLE_VALUE) {
             _tprintf(TEXT("CreateNamedPipe failed, GLE=%d.\n"), GetLastError());
             return -1;
         }
 
-        // Wait for the client to connect; if it succeeds, 
-        // the function returns a nonzero value. If the function
-        // returns zero, GetLastError returns ERROR_PIPE_CONNECTED. 
-
-        fConnected = ConnectNamedPipe(hPipe, NULL) ?
-            TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
-
+        // Wait for the client to connect; if it succeeds, the function returns a nonzero value. 
+        // If the function returns zero, GetLastError returns ERROR_PIPE_CONNECTED. 
+        fConnected = ConnectNamedPipe(hPipe, NULL) ? TRUE : (GetLastError() == ERROR_PIPE_CONNECTED);
         if (fConnected) {
             printf("Client connected, creating a processing thread.\n");
 
@@ -75,25 +70,21 @@ int _tmain(VOID)
                 (LPVOID)hPipe,    // thread parameter 
                 0,                 // not suspended 
                 &dwThreadId);      // returns thread ID 
-
             if (hThread == NULL) {
                 _tprintf(TEXT("CreateThread failed, GLE=%d.\n"), GetLastError());
                 return -1;
             } else CloseHandle(hThread);
         } else
-            // The client could not connect, so close the pipe. 
-            CloseHandle(hPipe);
+            CloseHandle(hPipe);// The client could not connect, so close the pipe. 
     }
 
     return 0;
 }
 
 DWORD WINAPI InstanceThread(LPVOID lpvParam)
-// This routine is a thread processing function to read from and reply to a client
-// via the open pipe connection passed from the main loop. Note this allows
-// the main loop to continue executing, potentially creating more threads of
-// of this procedure to run concurrently, depending on the number of incoming
-// client connections.
+// This routine is a thread processing function to read from and reply to a client via the open pipe connection passed from the main loop.
+// Note this allows the main loop to continue executing, potentially creating more threads of
+// of this procedure to run concurrently, depending on the number of incoming client connections.
 {
     HANDLE hHeap = GetProcessHeap();
     TCHAR * pchRequest = (TCHAR *)HeapAlloc(hHeap, 0, BUFSIZE * sizeof(TCHAR));
@@ -103,8 +94,7 @@ DWORD WINAPI InstanceThread(LPVOID lpvParam)
     BOOL fSuccess = FALSE;
     HANDLE hPipe = NULL;
 
-    // Do some extra error checking since the app will keep running even if this
-    // thread fails.
+    // Do some extra error checking since the app will keep running even if this thread fails.
 
     if (lpvParam == NULL) {
         printf("\nERROR - Pipe Server Failure:\n");
@@ -133,22 +123,18 @@ DWORD WINAPI InstanceThread(LPVOID lpvParam)
 
     // Print verbose messages. In production code, this should be for debugging only.
     printf("InstanceThread created, receiving and processing messages.\n");
-
-    // The thread's parameter is a handle to a pipe object instance. 
-
-    hPipe = (HANDLE)lpvParam;
+    
+    hPipe = (HANDLE)lpvParam;// The thread's parameter is a handle to a pipe object instance. 
 
     // Loop until done reading
     while (1) {
-        // Read client requests from the pipe. This simplistic code only allows messages
-        // up to BUFSIZE characters in length.
+        // Read client requests from the pipe. This simplistic code only allows messages up to BUFSIZE characters in length.
         fSuccess = ReadFile(
             hPipe,        // handle to pipe 
             pchRequest,    // buffer to receive data 
             BUFSIZE * sizeof(TCHAR), // size of buffer 
             &cbBytesRead, // number of bytes read 
             NULL);        // not overlapped I/O 
-
         if (!fSuccess || cbBytesRead == 0) {
             if (GetLastError() == ERROR_BROKEN_PIPE) {
                 _tprintf(TEXT("InstanceThread: client disconnected.\n"));
@@ -158,8 +144,7 @@ DWORD WINAPI InstanceThread(LPVOID lpvParam)
             break;
         }
 
-        // Process the incoming message.
-        GetAnswerToRequest(pchRequest, pchReply, &cbReplyBytes);
+        GetAnswerToRequest(pchRequest, pchReply, &cbReplyBytes);// Process the incoming message.
 
         // Write the reply to the pipe. 
         fSuccess = WriteFile(
@@ -168,16 +153,14 @@ DWORD WINAPI InstanceThread(LPVOID lpvParam)
             cbReplyBytes, // number of bytes to write 
             &cbWritten,   // number of bytes written 
             NULL);        // not overlapped I/O 
-
         if (!fSuccess || cbReplyBytes != cbWritten) {
             _tprintf(TEXT("InstanceThread WriteFile failed, GLE=%d.\n"), GetLastError());
             break;
         }
     }
 
-    // Flush the pipe to allow the client to read the pipe's contents 
-    // before disconnecting. Then disconnect the pipe, and close the 
-    // handle to this pipe instance. 
+    // Flush the pipe to allow the client to read the pipe's contents before disconnecting. 
+    // Then disconnect the pipe, and close the handle to this pipe instance. 
 
     FlushFileBuffers(hPipe);
     DisconnectNamedPipe(hPipe);
@@ -190,14 +173,10 @@ DWORD WINAPI InstanceThread(LPVOID lpvParam)
     return 1;
 }
 
-VOID GetAnswerToRequest(LPTSTR pchRequest,
-                        LPTSTR pchReply,
-                        LPDWORD pchBytes)
-    // This routine is a simple function to print the client request to the console
-    // and populate the reply buffer with a default data string. This is where you
-    // would put the actual client request processing code that runs in the context
-    // of an instance thread. Keep in mind the main thread will continue to wait for
-    // and receive other client connections while the instance thread is working.
+VOID GetAnswerToRequest(LPTSTR pchRequest, LPTSTR pchReply, LPDWORD pchBytes)
+// This routine is a simple function to print the client request to the console and populate the reply buffer with a default data string.
+// This is where you would put the actual client request processing code that runs in the context of an instance thread.
+// Keep in mind the main thread will continue to wait for and receive other client connections while the instance thread is working.
 {
     _tprintf(TEXT("Client Request String:\"%s\"\n"), pchRequest);
 
