@@ -95,5 +95,5 @@ DiskId1                 = "NpMs Device Installation Disk"
 DefaultInstance         = "NpMs Instance"
 Instance1.Name          = "NpMs Instance"
 ; TODO - Change the altitude value, see https://msdn.microsoft.com/en-us/windows/hardware/drivers/ifs/load-order-groups-and-altitudes-for-minifilter-drivers
-Instance1.Altitude       = "_TODO_Change_Altitude_appropriately_"
+Instance1.Altitude       = "370031" ;_TODO_Change_Altitude_appropriately_ 这里填写这个是拦截不到的，前后操作都不会走，InstanceSetup也不会走。
 Instance1.Flags         = 0x0              ; Allow all attachments

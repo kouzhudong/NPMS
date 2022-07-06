@@ -63,6 +63,7 @@ FLT_POSTOP_CALLBACK_STATUS CreatePostOperation(__inout PFLT_CALLBACK_DATA Data,
 }
 
 
+#pragma NPAGEDCODE
 CONST FLT_OPERATION_REGISTRATION Callbacks[] = {
     { IRP_MJ_CREATE,            0,  0,                              CreatePostOperation},
     { IRP_MJ_CREATE_NAMED_PIPE, 0,  CreateNamedPipePreOPeration,    0},
@@ -123,9 +124,12 @@ NTSTATUS InstanceSetup(__in PCFLT_RELATED_OBJECTS FltObjects,
 
     PAGED_CODE();
 
-    if (FILE_DEVICE_NAMED_PIPE == VolumeDeviceType || FILE_DEVICE_MAILSLOT == VolumeDeviceType ||
-        FLT_FSTYPE_MSFS == VolumeDeviceType || FLT_FSTYPE_NPFS == VolumeFilesystemType) {
-        KdBreakPoint();
+    if (FILE_DEVICE_NAMED_PIPE == VolumeDeviceType || FILE_DEVICE_MAILSLOT == VolumeDeviceType) {
+        KdPrint(("VolumeDeviceType: %d!\n", VolumeDeviceType));
+    }
+
+    if (FLT_FSTYPE_NPFS == VolumeFilesystemType|| FLT_FSTYPE_MSFS == VolumeFilesystemType) {
+        KdPrint(("VolumeFilesystemType: %d!\n", VolumeFilesystemType));
     }
 
     PrintVolume(FltObjects);
@@ -154,6 +158,7 @@ NTSTATUS PtUnload(__in FLT_FILTER_UNLOAD_FLAGS Flags)
 }
 
 
+#pragma NPAGEDCODE
 const FLT_REGISTRATION FilterRegistration = {
     sizeof(FLT_REGISTRATION),         //  Size
 
