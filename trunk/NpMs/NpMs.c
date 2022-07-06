@@ -53,10 +53,8 @@ FLT_POSTOP_CALLBACK_STATUS CreatePostOperation(__inout PFLT_CALLBACK_DATA Data,
     UNREFERENCED_PARAMETER(Flags);
     UNREFERENCED_PARAMETER(FltObjects);
 
-    if (FlagOn(Data->Iopb->TargetFileObject->Flags, FO_NAMED_PIPE) || FlagOn(Data->Iopb->TargetFileObject->Flags, FO_MAILSLOT))//Data->Flags
-    {
-        //没有走到这里过,如何能走到这里呢?
-        KdPrint(("i am in CreatePostOperation!\n"));
+    if (FlagOn(Data->Iopb->TargetFileObject->Flags, FO_NAMED_PIPE) || FlagOn(Data->Iopb->TargetFileObject->Flags, FO_MAILSLOT)) {//Data->Flags
+        KdPrint(("i am in CreatePostOperation!\n"));//这也是识别NAMED_PIPE和MAILSLOT的一个办法。
     }
 
     return FLT_POSTOP_FINISHED_PROCESSING;
