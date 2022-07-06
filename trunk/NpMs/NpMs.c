@@ -27,8 +27,9 @@ win 8 以下需要附加并过滤:L"\\Device\\NamedPipe" and L"\\Device\\Mailslot".
 {
     //没有走到这里过,如何能走到这里呢?难道要使用:FltCreateNamedPipeFile和FltCreateMailslotFile
 
-    UNREFERENCED_PARAMETER(CompletionContext);
     UNREFERENCED_PARAMETER(FltObjects);
+
+    *CompletionContext = NULL;
 
     KdPrint(("i am in CreateNamedPipePreOPeration!\n"));
 
@@ -38,18 +39,16 @@ win 8 以下需要附加并过滤:L"\\Device\\NamedPipe" and L"\\Device\\Mailslot".
         return FLT_PREOP_COMPLETE;
     }
 
-    return FLT_PREOP_SUCCESS_WITH_CALLBACK;
+    return FLT_PREOP_SUCCESS_NO_CALLBACK;
 }
 
-FLT_POSTOP_CALLBACK_STATUS CreatePostOperation(__inout PFLT_CALLBACK_DATA Data, __in PCFLT_RELATED_OBJECTS FltObjects, __in_opt PVOID CompletionContext, __in FLT_POST_OPERATION_FLAGS Flags)
-{
-    //PFLT_FILE_NAME_INFORMATION    pfni;
-    //NTSTATUS                      status;
-    //FILE_DISPOSITION_INFORMATION  fdi;
-    //BOOLEAN IsInSpecial = FALSE;
-    //BOOLEAN IsInRecycler = FALSE;
-    //BOOLEAN IsInMup = FALSE;
 
+FLT_POSTOP_CALLBACK_STATUS CreatePostOperation(__inout PFLT_CALLBACK_DATA Data, 
+                                               __in PCFLT_RELATED_OBJECTS FltObjects, 
+                                               __in_opt PVOID CompletionContext, 
+                                               __in FLT_POST_OPERATION_FLAGS Flags
+)
+{
     UNREFERENCED_PARAMETER(CompletionContext);
     UNREFERENCED_PARAMETER(Flags);
     UNREFERENCED_PARAMETER(FltObjects);
@@ -63,12 +62,14 @@ FLT_POSTOP_CALLBACK_STATUS CreatePostOperation(__inout PFLT_CALLBACK_DATA Data, 
     return FLT_POSTOP_FINISHED_PROCESSING;
 }
 
+
 CONST FLT_OPERATION_REGISTRATION Callbacks[] = {
-    { IRP_MJ_CREATE,  0, 0, CreatePostOperation},
-    { IRP_MJ_CREATE_NAMED_PIPE,  0, CreateNamedPipePreOPeration, 0},
-    { IRP_MJ_CREATE_MAILSLOT,  0, CreateNamedPipePreOPeration, 0},//这个和IRP_MJ_CREATE_NAMED_PIPE的处理一样,用同一个函数.
+    { IRP_MJ_CREATE,            0,  0,                              CreatePostOperation},
+    { IRP_MJ_CREATE_NAMED_PIPE, 0,  CreateNamedPipePreOPeration,    0},
+    { IRP_MJ_CREATE_MAILSLOT,   0,  CreateNamedPipePreOPeration,    0},//这个和IRP_MJ_CREATE_NAMED_PIPE的处理一样,用同一个函数.
     { IRP_MJ_OPERATION_END }
 };
+
 
 BOOLEAN PrintVolume(__in PCFLT_RELATED_OBJECTS FltObjects)
 /*
@@ -88,11 +89,11 @@ BOOLEAN PrintVolume(__in PCFLT_RELATED_OBJECTS FltObjects)
         return FALSE;
     }
 
-    Buffer = ExAllocatePoolWithTag(NonPagedPool, BufferSizeNeeded + 2, TAG);
+    Buffer = ExAllocatePoolWithTag(NonPagedPool, (SIZE_T)BufferSizeNeeded + 2, TAG);
     if (Buffer == NULL) {
         return FALSE;
     }
-    RtlZeroMemory(Buffer, BufferSizeNeeded + 2);
+    RtlZeroMemory(Buffer, (size_t)BufferSizeNeeded + 2);
 
     Volume.Buffer = Buffer;
     Volume.Length = (USHORT)BufferSizeNeeded;
@@ -111,18 +112,19 @@ BOOLEAN PrintVolume(__in PCFLT_RELATED_OBJECTS FltObjects)
     return r;
 }
 
-NTSTATUS InstanceSetup(__in PCFLT_RELATED_OBJECTS FltObjects, __in FLT_INSTANCE_SETUP_FLAGS Flags,
-                       __in DEVICE_TYPE VolumeDeviceType, __in FLT_FILESYSTEM_TYPE VolumeFilesystemType)
+
+NTSTATUS InstanceSetup(__in PCFLT_RELATED_OBJECTS FltObjects, 
+                       __in FLT_INSTANCE_SETUP_FLAGS Flags,
+                       __in DEVICE_TYPE VolumeDeviceType, 
+                       __in FLT_FILESYSTEM_TYPE VolumeFilesystemType
+)
 {
     UNREFERENCED_PARAMETER(Flags);//与下面的if语句自相矛盾。
-    UNREFERENCED_PARAMETER(VolumeDeviceType);
-    UNREFERENCED_PARAMETER(VolumeFilesystemType);
 
     PAGED_CODE();
 
     if (FILE_DEVICE_NAMED_PIPE == VolumeDeviceType || FILE_DEVICE_MAILSLOT == VolumeDeviceType ||
-        FLT_FSTYPE_NPFS == VolumeFilesystemType || FLT_FSTYPE_MSFS == VolumeDeviceType
-        ) {
+        FLT_FSTYPE_MSFS == VolumeDeviceType || FLT_FSTYPE_NPFS == VolumeFilesystemType) {
         KdBreakPoint();
     }
 
@@ -130,6 +132,7 @@ NTSTATUS InstanceSetup(__in PCFLT_RELATED_OBJECTS FltObjects, __in FLT_INSTANCE_
 
     return STATUS_SUCCESS;//  Attach on manual attachment.
 }
+
 
 #pragma PAGEDCODE
 NTSTATUS PtInstanceQueryTeardown(__in PCFLT_RELATED_OBJECTS FltObjects, __in FLT_INSTANCE_QUERY_TEARDOWN_FLAGS Flags)
@@ -140,6 +143,7 @@ NTSTATUS PtInstanceQueryTeardown(__in PCFLT_RELATED_OBJECTS FltObjects, __in FLT
     return STATUS_SUCCESS;
 }
 
+
 #pragma PAGEDCODE//#pragma alloc_text(PAGE, PtUnload)
 NTSTATUS PtUnload(__in FLT_FILTER_UNLOAD_FLAGS Flags)
 {
@@ -148,6 +152,7 @@ NTSTATUS PtUnload(__in FLT_FILTER_UNLOAD_FLAGS Flags)
     FltUnregisterFilter(gFilterHandle);
     return STATUS_SUCCESS;
 }
+
 
 const FLT_REGISTRATION FilterRegistration = {
     sizeof(FLT_REGISTRATION),         //  Size
@@ -164,13 +169,11 @@ const FLT_REGISTRATION FilterRegistration = {
     */
     FLT_REGISTRATION_VERSION,           //  Version
 
-//#if (NTDDI_VERSION >= NTDDI_WIN8)
-//    FLTFL_REGISTRATION_SUPPORT_NPFS_MSFS,   //  Flags
-//#else
-//    0,                                      //  Flags
-//#endif 
-
+#if (NTDDI_VERSION >= NTDDI_WIN8)
     FLTFL_REGISTRATION_SUPPORT_NPFS_MSFS,   //  Flags
+#else
+    0,                                      //  Flags
+#endif 
 
     0,                                  //  Context
     Callbacks,                          //  Operation callbacks
@@ -183,6 +186,7 @@ const FLT_REGISTRATION FilterRegistration = {
     NULL,                               //  GenerateDestinationFileName
     NULL                                //  NormalizeNameComponent
 };
+
 
 DRIVER_INITIALIZE DriverEntry;
 #pragma alloc_text(INIT, DriverEntry)//#pragma INITCODE
