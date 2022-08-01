@@ -361,7 +361,7 @@ flag 创建的过滤设备的标志,在设备对象的扩展结构里面.
     pDevExt->NextDeviceObject = AttachedDevice;
     pDevExt->type = Flag;
 
-    return TRUE;
+    return Status;
 }
 
 
