@@ -51,7 +51,7 @@ Dependencies     = "npfs","msfs"			;
 ServiceType      = 2                        ;SERVICE_FILE_SYSTEM_DRIVER
 StartType        = 1                        ;SERVICE_DEMAND_START
 ErrorControl     = 1                        ;SERVICE_ERROR_NORMAL
-LoadOrderGroup   = "File System"			;FSFilter Activity Monitor
+LoadOrderGroup   = "PNP_TDI"				;FSFilter Activity Monitor OR "File System"
 AddReg           = test.AddRegistry
 
 ;
